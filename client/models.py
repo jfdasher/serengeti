@@ -4,6 +4,9 @@ import datetime
 
 class ReportStatus(models.Model):
     name = models.CharField(max_length=32)
+    class Meta:
+        verbose_name_plural = "Report Statuses"
+
     def __str__(self):
         return self.name
 
@@ -12,9 +15,19 @@ class ReportType(models.Model):
     def __str__(self):
         return self.name
 
+class ProductLine(models.Model):
+    DEFAULT_PK=1
+    name = models.CharField(max_length=32)
+    def __str__(self):
+        return self.name
+
 class ReportRenderingStrategy(models.Model):
     DEFAULT_PK=1
     name = models.CharField(max_length=32)
+
+    class Meta:
+        verbose_name_plural = "Report Rendering Strategies"
+
     def __str__(self):
         return self.name
 
@@ -32,7 +45,8 @@ class Company(models.Model):
     def __str__(self):
         return self.name +  " " + self.ticker
 
-
+class Tag(models.Model):
+    name = models.CharField(max_length=12)
 
 # Create your models here.
 class Report(models.Model):
@@ -40,17 +54,20 @@ class Report(models.Model):
     text = models.TextField()
     release_date = models.DateField('date published', default=datetime.date.today)
     status = models.ForeignKey(ReportStatus, on_delete=models.PROTECT)
-    type = models.ForeignKey(ReportType, on_delete=models.PROTECT)
-    rendering_strategy = models.ForeignKey(ReportRenderingStrategy, on_delete=models.PROTECT, null=True)
-    private = models.BooleanField(default=False)
+    product_line = models.ForeignKey(ProductLine, on_delete=models.PROTECT, default=2)
+    rendering_strategy = models.ForeignKey(ReportRenderingStrategy, on_delete=models.PROTECT, default=2)
     tickers = models.ManyToManyField(
         Company,
         through='ReportCompany'
     )
-    sourceParent = models.ForeignKey("self", related_name="source_children", null=True, on_delete=models.PROTECT)
-    previousReport = models.ForeignKey("self", related_name="later_reports", null=True, on_delete=models.PROTECT)
+    tags = models.ManyToManyField(Tag, null=True, blank=True)
+    sourceParent = models.ForeignKey("self", related_name="source_children", null=True, blank=True, on_delete=models.PROTECT)
+    previousReport = models.ForeignKey("self", related_name="later_reports", null=True, blank=True, on_delete=models.PROTECT)
+    primaryFile = models.FileField(null=True, blank=True)
+    sourceFile = models.FileField(null=True, blank=True)
     def __str__(self):
-        return self.title + ": " + self.release_date
+        return "%s : %s" % (self.title,  str(self.release_date))
+
 
 
 class ReportCompany(models.Model):
@@ -64,6 +81,19 @@ class ReportReport(models.Model):
     parent = models.ForeignKey(Report, related_name="children",  on_delete=models.CASCADE)
     child = models.ForeignKey(Report, related_name="parents",  on_delete=models.CASCADE)
     relationship = models.ForeignKey(ReportRelationshipType, on_delete=models.PROTECT)
+
+class ReportFileType(models.Model):
+    DEFAULT_PK=1
+    name = models.CharField(max_length=32)
+    def __str__(self):
+        return self.name
+
+class ReportFile(models.Model):
+    report = models.ForeignKey(Report, on_delete=models.CASCADE)
+    type = models.ForeignKey(ReportFileType, on_delete=models.PROTECT)
+    file = models.FileField()
+
+
 
 """
 

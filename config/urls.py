@@ -20,21 +20,25 @@ from django.conf.urls.static import static
 
 
 from django.conf.urls import url
-from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 
 from django.views.static import serve
+#from ajax_select import urls as ajax_select_urls
 
-
-@login_required
+@staff_member_required
 def protected_serve(request, path, document_root=None, show_indexes=False):
+    print ("%s %s" % (path, document_root,));
     return serve(request, path, document_root, show_indexes)
 
+#admin.autodiscover()
 
 urlpatterns = [
     path('client/', include('client.urls')),
     path('admin/', admin.site.urls),
-    #path(r'^tinymce/', include('tinymce.urls')),
+    path(r'^tinymce/', include('tinymce.urls')),
     path(r'^grappelli/', include('grappelli.urls')),
+#    url(r'^ajax_select/', include(ajax_select_urls)),
     url(r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], protected_serve, {'document_root': settings.MEDIA_ROOT}),
+
 ]
 # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

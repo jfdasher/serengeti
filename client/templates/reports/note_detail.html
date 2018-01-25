@@ -1,0 +1,29 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'client/style.css' %}" />
+
+<body id="noteBody">
+  <div class="noteTitle" id="title">{{report.title}}</div>
+  <div class="noteTitle" id="headline">{{report.headline}}</div>
+  <div class="dateLine" id="dateline">{{report.release_date|date:"F dS, Y"  }}</div>
+
+
+  <div id="primary_tickers">
+    {% for company in report.primary_tickers %}
+        <span class="primary_ticker ticker">{{company.ticker}}</span>
+    {% endfor %}
+  </div>
+  <div id="secondary_tickers">
+   {% for company in report.secondary_tickers %}
+        <span class="secondary_ticker ticker">{{company.ticker}}</span>
+    {% endfor %}
+ </div>
+  <div id="author">{{report.author}}</div>
+  <div id="editor">{{report.editor}}</div>
+  <div id="sources">{{report.sources}}</div>
+  <div id="lede">{{report.bolded_lede}}</div>
+  <div id="read_bullet">{{report.read_bullet}}</div>
+  <div id="supporting_bullets">{{report.supporting_bullets}}</div>
+  <div id="body">{{report.text|safe}}</div>
+  <div id="contributors">{{report.contributors}}</div>
+</body>

@@ -32,7 +32,9 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'grappelli',
+    #'ajax_select',
 #--    'filebrowser',
+    'tinymce',
     'client.apps.ClientConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -120,5 +122,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
+MEDIA_ROOT = 'c:/prj/snakepit/media/'
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+LOGIN_URL = '/admin/login/'

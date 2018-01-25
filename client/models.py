@@ -43,7 +43,7 @@ class Company(models.Model):
     class Meta:
         verbose_name_plural = "Companies"
     def __str__(self):
-        return self.name +  " " + self.ticker
+        return self.name +  " : " + self.ticker
 
 class Tag(models.Model):
     name = models.CharField(max_length=12)
@@ -61,37 +61,41 @@ class Report(models.Model):
         through='ReportCompany'
     )
     tags = models.ManyToManyField(Tag, null=True, blank=True)
-    sourceParent = models.ForeignKey("self", related_name="source_children", null=True, blank=True, on_delete=models.PROTECT)
-    previousReport = models.ForeignKey("self", related_name="later_reports", null=True, blank=True, on_delete=models.PROTECT)
-    primaryFile = models.FileField(null=True, blank=True)
-    sourceFile = models.FileField(null=True, blank=True)
+    flash_parent = models.ForeignKey("self", related_name="flash_children", null=True, blank=True, on_delete=models.PROTECT)
+    source_parent = models.ForeignKey("self", related_name="source_children", null=True, blank=True, on_delete=models.PROTECT)
+    previous_report = models.ForeignKey("self", related_name="later_reports", null=True, blank=True, on_delete=models.PROTECT)
+    primary_file = models.FileField(null=True, blank=True)
+    source_file = models.FileField(null=True, blank=True)
     def __str__(self):
         return "%s : %s" % (self.title,  str(self.release_date))
-
+    def primary_tickers(self):
+        return Company.objects.filter(report_mention__primary=True, report_mention__report=self).all()
+    def secondary_tickers(self):
+        return Company.objects.filter(report_mention__primary=False, report_mention__report=self).all()
 
 
 class ReportCompany(models.Model):
     report = models.ForeignKey(Report, on_delete=models.CASCADE)
-    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='report_mention')
     primary = models.BooleanField(default=True)
     class Meta:
         verbose_name_plural = "Report Companies"
 
-class ReportReport(models.Model):
-    parent = models.ForeignKey(Report, related_name="children",  on_delete=models.CASCADE)
-    child = models.ForeignKey(Report, related_name="parents",  on_delete=models.CASCADE)
-    relationship = models.ForeignKey(ReportRelationshipType, on_delete=models.PROTECT)
+#class ReportReport(models.Model):
+#    parent = models.ForeignKey(Report, related_name="children",  on_delete=models.CASCADE)
+#    child = models.ForeignKey(Report, related_name="parents",  on_delete=models.CASCADE)
+#    relationship = models.ForeignKey(ReportRelationshipType, on_delete=models.PROTECT)
 
-class ReportFileType(models.Model):
-    DEFAULT_PK=1
-    name = models.CharField(max_length=32)
-    def __str__(self):
-        return self.name
+#class ReportFileType(models.Model):
+#    DEFAULT_PK=1
+#    name = models.CharField(max_length=32)
+#    def __str__(self):
+#        return self.name
 
-class ReportFile(models.Model):
-    report = models.ForeignKey(Report, on_delete=models.CASCADE)
-    type = models.ForeignKey(ReportFileType, on_delete=models.PROTECT)
-    file = models.FileField()
+#class ReportFile(models.Model):
+#    report = models.ForeignKey(Report, on_delete=models.CASCADE)
+#    type = models.ForeignKey(ReportFileType, on_delete=models.PROTECT)
+#    file = models.FileField()
 
 
 

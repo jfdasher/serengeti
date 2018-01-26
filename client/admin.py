@@ -14,7 +14,7 @@ class ReportCompanyInline(admin.TabularInline):
 class ReportFlashInline(admin.TabularInline):
      model=Report
      fk_name='flash_parent'
-     extra = 1
+     extra = 0
 #    model = ReportReport
 #    fk_name = 'parent'
 #    extra = 1
@@ -30,9 +30,11 @@ class ReportFlashInline(admin.TabularInline):
 #    extra = 1
 
 from tinymce.widgets import TinyMCE
+from ajax_select import make_ajax_form
+from ajax_select.admin import AjaxSelectAdmin
 
-
-class ReportModelAdmin(admin.ModelAdmin):
+@admin.register(Report)
+class ReportModelAdmin(AjaxSelectAdmin):
     inlines = (ReportCompanyInline,
                ReportFlashInline,
     )
@@ -41,7 +43,10 @@ class ReportModelAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.TextField: {'widget':TinyMCE()},
     }
-admin.site.register(Report, ReportModelAdmin)
+    form = make_ajax_form(Report, {
+        'flash_parent': 'reports',  # ManyToManyField
+    })
+
 
 
 #admin.site.register(Report)

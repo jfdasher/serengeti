@@ -18,4 +18,7 @@ def detail(request, report_id):
     }
     if report.rendering_strategy.name == 'HTML_NOTE':
         return render(request, 'reports/note_detail.html', context)
+    elif report.rendering_strategy.name == 'FLASH_COMPENDIUM':
+        return render(request, 'reports/flash_detail.html', context)
+
     return serve(request, report.primary_file.url, '');

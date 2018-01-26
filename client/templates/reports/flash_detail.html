@@ -1,0 +1,17 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'client/style.css' %}" />
+
+<body id="noteBody">
+  <div class="noteTitle" id="title">{{report.title}}</div>
+  <div class="noteTitle" id="headline">{{report.headline}}</div>
+  <div class="dateLine" id="dateline">{{report.release_date|date:"F dS, Y"  }}</div>
+
+
+      <ul>
+      {% for r in report.flash_children.all %}
+          <li><a href="/client/reports/{{ r.id }}/">{{ r.title }}</a></li>
+      {% endfor %}
+      </ul>
+
+</body>

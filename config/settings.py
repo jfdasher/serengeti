@@ -32,7 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'grappelli',
-    #'ajax_select',
+    'ajax_select',
 #--    'filebrowser',
     'tinymce',
     'client.apps.ClientConfig',

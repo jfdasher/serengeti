@@ -15,6 +15,11 @@ class ReportType(models.Model):
     def __str__(self):
         return self.name
 
+class FlashRating(models.Model):
+    name = models.CharField(max_length=32)
+    def __str__(self):
+        return self.name
+
 class ProductLine(models.Model):
     DEFAULT_PK=1
     name = models.CharField(max_length=32)
@@ -51,7 +56,14 @@ class Tag(models.Model):
 # Create your models here.
 class Report(models.Model):
     title = models.CharField(max_length=200)
-    text = models.TextField()
+
+    text = models.TextField(null=True, blank=True)
+    headline = models.TextField(null=True, blank=True)
+    story = models.TextField(null=True, blank=True)
+
+    sub_heading = models.TextField(null=True, blank=True)
+    sources = models.CharField(null=True, blank=True, max_length=2000)
+
     release_date = models.DateField('date published', default=datetime.date.today)
     status = models.ForeignKey(ReportStatus, on_delete=models.PROTECT)
     product_line = models.ForeignKey(ProductLine, on_delete=models.PROTECT, default=2)
@@ -62,6 +74,7 @@ class Report(models.Model):
     )
     tags = models.ManyToManyField(Tag, null=True, blank=True)
     flash_parent = models.ForeignKey("self", related_name="flash_children", null=True, blank=True, on_delete=models.PROTECT)
+    flash_rating = models.ForeignKey(FlashRating, null=True, blank=True, on_delete=models.PROTECT)
     source_parent = models.ForeignKey("self", related_name="source_children", null=True, blank=True, on_delete=models.PROTECT)
     previous_report = models.ForeignKey("self", related_name="later_reports", null=True, blank=True, on_delete=models.PROTECT)
     primary_file = models.FileField(null=True, blank=True)
